@@ -20,9 +20,9 @@ app.use(express.static('public'));
 
 // Initialize Spotify API client
 const spotifyApi = new SpotifyWebApi({
-    clientId: process.env.SPOTIFY_CLIENT_ID,
-    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    redirectUri: process.env.REDIRECT_URI
+    clientId: SPOTIFY_CLIENT_ID,
+    clientSecret: SPOTIFY_CLIENT_SECRET,
+    redirectUri: REDIRECT_URI
 });
 
 // Initialize token refresh mechanism
