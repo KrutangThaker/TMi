@@ -49,19 +49,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-// Get token endpoint for client
 app.get('/api/token', (req, res) => {
+    console.log('Token request received');
     if (accessToken) {
+        console.log('Sending access token');
         res.json({ access_token: accessToken });
     } else {
+        console.log('No access token available');
         res.status(500).json({ error: 'No access token available' });
     }
 });
 
-// Endpoint to get playlist tracks
 app.get('/api/playlist/:playlistId', async (req, res) => {
+    console.log('Playlist request received for ID:', req.params.playlistId);
     try {
         const data = await spotifyApi.getPlaylist(req.params.playlistId);
+        console.log('Playlist data retrieved successfully');
         const tracks = data.body.tracks.items.map(item => ({
             name: item.track.name,
             artist: item.track.artists[0].name,
