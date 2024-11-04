@@ -1,4 +1,5 @@
 // server.js
+//AHHH WHY DOESNT IT WORK FOR ONLINE VERSION!
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -20,9 +21,9 @@ app.use(express.static('public'));
 
 // Initialize Spotify API client
 const spotifyApi = new SpotifyWebApi({
-    clientId: SPOTIFY_CLIENT_ID,
-    clientSecret: SPOTIFY_CLIENT_SECRET,
-    redirectUri: REDIRECT_URI
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    redirectUri: process.env.REDIRECT_URI
 });
 
 // Initialize token refresh mechanism
