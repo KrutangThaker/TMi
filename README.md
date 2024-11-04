@@ -1,7 +1,7 @@
 # TMi
 birthday project for tanisha. 
 
-https://tmi-nn6uva4q4-krutangs-projects.vercel.app/
+https://tmi-zeta.vercel.app/
 
 
 ## Table of Contents
