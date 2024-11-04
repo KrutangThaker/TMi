@@ -1,5 +1,4 @@
 // server.js
-//AHHH WHY DOESNT IT WORK FOR ONLINE VERSION!
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -14,16 +13,26 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Environment configuration
+const isDev = process.env.NODE_ENV !== 'production';
+const getBaseUrl = () => {
+  if (isDev) {
+    return `http://localhost:${process.env.PORT || 3000}`;
+  }
+  // Use VERCEL_URL in production, fallback to your main deployment URL
+  return `https://${process.env.VERCEL_URL || 'tmi-krutangs-projects.vercel.app'}`;
+};
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Initialize Spotify API client
+// Initialize Spotify API client with dynamic redirect URI
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    redirectUri: process.env.REDIRECT_URI
+    redirectUri: `${getBaseUrl()}/callback`  // Dynamic redirect URI
 });
 
 // Initialize token refresh mechanism
@@ -86,15 +95,13 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
+// Start server with production-ready configuration
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on ${getBaseUrl()}`);
 });
 
 // Create the public directory structure
-
-    //const fs = require('fs'); ES module syntax doesn't support JS module syntax
 const publicDir = path.join(__dirname, 'public');
 const createPublicStructure = () => {
     if (!fs.existsSync(publicDir)) {
@@ -106,21 +113,6 @@ createPublicStructure();
 
 // Update your public directory with necessary files
 const setupPublicFiles = () => {
-    //const fs = require('fs');
-    /*import{ promises as fs } from 'fs';
-    
-    // Move app.js and game-ui.js to public directory
-    const files = {
-        'app.js': path.join(publicDir, 'app.js'),
-        'game-ui.js': path.join(publicDir, 'game-ui.js')
-    };
-    
-    Object.entries(files).forEach(([file, dest]) => {
-        if (!fs.existsSync(dest)) {
-            console.log(`Please place ${file} in the public directory`);
-        }
-    });
-};*/
     const files = {
         'app.js': path.join(publicDir, 'app.js'),
         'game-ui.js': path.join(publicDir, 'game-ui.js')
@@ -142,3 +134,13 @@ process.on('SIGTERM', () => {
         console.log('HTTP server closed');
     });
 });
+
+// Handle production-specific requirements
+if (!isDev) {
+    // Ensure all routes fall back to index.html for client-side routing
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public/index.html'));
+    });
+}
+
+export default app; // For Vercel serverless deployment
